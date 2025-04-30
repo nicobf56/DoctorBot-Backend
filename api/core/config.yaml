@@ -1,0 +1,17 @@
+azure_openai:
+  api_key: "9sQSqpn65N4XshjfnQgK85PTlA3FzkPmmxIhxwOyQjUVr7gdcEMkJQQJ99BBACHYHv6XJ3w3AAABACOG3lSW"
+  api_endpoint: "https://invuniandesai-2.openai.azure.com/"
+  api_version: "2024-02-01"
+  base_model: "gpt-4o"
+  deployment_name : "gpt-4o-rfmanrique"
+
+azure_openai_embeddings:
+  api_key: "9sQSqpn65N4XshjfnQgK85PTlA3FzkPmmxIhxwOyQjUVr7gdcEMkJQQJ99BBACHYHv6XJ3w3AAABACOG3lSW"
+  api_endpoint: "https://invuniandesai-2.openai.azure.com/"
+  api_version: "2024-02-01"
+  base_model: "text-embedding-ada-002"
+  deployment_name: "gpt4-embedding-ada-002"
+
+cohere:
+  api_key: "2AgDyEUjjWzG8QGs1OZw4BE7V4MVCzD4YmnwdKER"
+  api_base: "https://api.cohere.ai"
