@@ -3,7 +3,7 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-from .views import GenerateAnswerAPIView, ProtectedAPIView, ChatHistoryListView, ChatHistoryDetailView
+from .views import GenerateAnswerAPIView, ProtectedAPIView, ChatHistoryListView, ChatHistoryDetailView, CorrectionCreateView, FeedbackCreateView
 
 urlpatterns = [
     path('generar-respuesta/', GenerateAnswerAPIView.as_view(), name='generate_answer'),
@@ -12,4 +12,6 @@ urlpatterns = [
     path('protegido/', ProtectedAPIView.as_view(), name='protected'),
     path("historial/", ChatHistoryListView.as_view(), name="historial-list"),
     path("historial/<int:pk>/", ChatHistoryDetailView.as_view(), name="historial-detail"),
+    path('corrections/', CorrectionCreateView.as_view(), name='add-correction'),
+    path('feedback/', FeedbackCreateView.as_view(), name='submit-feedback'),
 ]

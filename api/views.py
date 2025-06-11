@@ -2,9 +2,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import ListAPIView, RetrieveAPIView
-from rest_framework import status
+from rest_framework import status, generics
 from api.core.response import generate_answer
-from .serializers import ChatHistorySerializer  
+from .serializers import ChatHistorySerializer, CorrectionSerializer, FeedbackSerializer
 from .models import ChatHistory
 
 class GenerateAnswerAPIView(APIView):
@@ -17,7 +17,7 @@ class GenerateAnswerAPIView(APIView):
 
         answer, references = generate_answer(question)
 
-        ChatHistory.objects.create(
+        chat = ChatHistory.objects.create(
             user=request.user,
             question=question,
             answer=answer,
@@ -25,6 +25,7 @@ class GenerateAnswerAPIView(APIView):
         )
 
         return Response({
+            "id": chat.id,
             "respuesta": answer,
             "referencias": references
         })
@@ -81,3 +82,26 @@ class ProtectedAPIView(APIView):
             "message": f"Hola, {request.user.username}! Estás autenticado correctamente."
         })
 
+
+class CorrectionCreateView(generics.CreateAPIView):
+    serializer_class = CorrectionSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+class FeedbackCreateView(generics.CreateAPIView):
+    serializer_class = FeedbackSerializer
+    permission_classes = [IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        try:
+            serializer.save(user=request.user)
+        except IntegrityError:
+            return Response(
+                {"detail": "Ya has votado esta respuesta."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
