@@ -10,10 +10,10 @@ class CorrectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Correction
         fields = ['id', 'chat', 'user', 'text', 'created_at']
-        read_only_fields = ['id', 'created_at']
+        read_only_fields = ['id', 'user', 'created_at']
 
 class FeedbackSerializer(serializers.ModelSerializer):
     class Meta:
         model = Feedback
         fields = ['id', 'chat', 'user', 'vote', 'created_at']
-        read_only_fields = ['id', 'created_at']
+        read_only_fields = ['id', 'user', 'created_at']

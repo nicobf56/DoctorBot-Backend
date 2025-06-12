@@ -1,3 +1,4 @@
+from sqlite3 import IntegrityError
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -6,6 +7,7 @@ from rest_framework import status, generics
 from api.core.response import generate_answer
 from .serializers import ChatHistorySerializer, CorrectionSerializer, FeedbackSerializer
 from .models import ChatHistory
+from api import serializers
 
 class GenerateAnswerAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -94,14 +96,8 @@ class FeedbackCreateView(generics.CreateAPIView):
     serializer_class = FeedbackSerializer
     permission_classes = [IsAuthenticated]
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+    def perform_create(self, serializer):
         try:
-            serializer.save(user=request.user)
+            serializer.save(user=self.request.user)
         except IntegrityError:
-            return Response(
-                {"detail": "Ya has votado esta respuesta."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+            raise serializers.ValidationError({"detail": "Ya has votado esta respuesta."})
