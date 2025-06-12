@@ -6,7 +6,7 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework import status, generics
 from api.core.response import generate_answer
 from .serializers import ChatHistorySerializer, CorrectionSerializer, FeedbackSerializer
-from .models import ChatHistory
+from .models import ChatHistory, Feedback
 from api import serializers
 
 class GenerateAnswerAPIView(APIView):
@@ -97,7 +97,15 @@ class FeedbackCreateView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        try:
-            serializer.save(user=self.request.user)
-        except IntegrityError:
-            raise serializers.ValidationError({"detail": "Ya has votado esta respuesta."})
+        Feedback.objects.update_or_create(
+        user=self.request.user,
+        chat=serializer.validated_data["chat"],
+        defaults={"vote": serializer.validated_data["vote"]},
+    )
+        
+class UserFeedbackListView(ListAPIView):
+    serializer_class = FeedbackSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Feedback.objects.filter(user=self.request.user)
